@@ -1,0 +1,46 @@
+# fastapi==0.111.0
+# uvicorn==0.30.1
+
+# pydantic==2.7.1
+# pydantic-settings==2.2.1
+# python-dotenv==1.0.1
+
+# sqlalchemy==2.0.30
+# psycopg2-binary==2.9.9
+
+# # langchain==0.2.1
+# langchain=0.3.28
+# # langgraph==0.0.55
+# langgraph==0.2.76
+# openai==1.30.1
+
+# tiktoken==0.7.0
+
+# # chromadb==0.5.0
+# chromadb==0.5.23
+# faiss-cpu==1.8.0
+
+# typing-extensions==4.11.0
+# langchain-google-genai==2.1.12 version conflict with langchain==0.2.1, so not using it for now
+# langchain-chromadb==0.1.4
+fastapi==0.111.0
+uvicorn==0.30.1
+
+pydantic==2.7.4
+pydantic-settings==2.2.1
+python-dotenv==1.0.1
+
+sqlalchemy==2.0.30
+psycopg2-binary==2.9.9
+
+langchain==0.3.28
+langgraph==0.2.76
+
+tiktoken==0.7.0
+typing-extensions==4.11.0
+
+chromadb==0.5.23
+langchain-chroma==0.1.4
+langchain-google-genai==2.1.12
+langchain-openai==0.3.16
+# google-generativeai==0.8.5
