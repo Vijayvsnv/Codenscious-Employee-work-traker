@@ -1,0 +1,55 @@
+# ─── Python ─────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# ─── Environment Variables (SECRETS) ─
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ─── Logs ───────────────────────────
+*.log
+backend/app.log
+
+# ─── Vector DB (contains embeddings) ─
+backend/chroma_db/
+*.chroma
+*.sqlite3
+
+# ─── Node / Frontend ────────────────
+node_modules/
+dist/
+build/
+.vite/
+*.local
+
+# ─── IDE / Editor ───────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ─── OS ─────────────────────────────
+.DS_Store
+desktop.ini
+$RECYCLE.BIN/
+
+# ─── Firebase (service account) ─────
+firebase-service-account.json
+serviceAccount*.json
+
+# ─── Misc ───────────────────────────
+*.pem
+.cache/
+coverage/
