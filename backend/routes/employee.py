@@ -268,7 +268,41 @@ def get_report_detail(emp_id: str, report_id: int, db: Session = Depends(get_db)
         raise HTTPException(status_code=500, detail="Failed to fetch report")
 
 
-# ─── API 6: RECENT TASKS ─────────────────────────────
+# ─── API 6a: SENTIMENT TREND ─────────────────────────
+@router.get("/{emp_id}/sentiment-trend")
+def get_sentiment_trend(
+    emp_id: str,
+    days: int = Query(30, ge=7, le=90),
+    db: Session = Depends(get_db)
+):
+    try:
+        start_date = date.today() - timedelta(days=days)
+        rows = db.query(
+            DailyReport.date,
+            DailyReport.sentiment_score,
+            DailyReport.sentiment_label,
+            DailyReport.mood,
+        ).filter(
+            DailyReport.emp_id == emp_id,
+            DailyReport.date >= start_date,
+            DailyReport.sentiment_score != None,
+        ).order_by(DailyReport.date).all()
+
+        return [
+            {
+                "date": str(r.date),
+                "sentiment_score": r.sentiment_score,
+                "sentiment_label": r.sentiment_label,
+                "mood": r.mood,
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        logger.error(f"Sentiment trend error for {emp_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch sentiment trend")
+
+
+# ─── API 7: RECENT TASKS ─────────────────────────────
 @router.get("/{emp_id}/recent-tasks")
 def get_recent_tasks(
     emp_id: str,

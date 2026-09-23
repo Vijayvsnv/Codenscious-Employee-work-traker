@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Boolean, Text, TIMESTAMP
+from sqlalchemy import Column, Integer, String, Date, Boolean, Text, TIMESTAMP, Float
 from db.database import Base
 from datetime import datetime
 
@@ -24,6 +24,12 @@ class DailyReport(Base):
     mood = Column(String)
 
     day_summary = Column(Text)
+
+    # AI Sentiment Analysis (nullable; populated on standup submit)
+    sentiment_score = Column(Float)          # -1.0 (very negative) to 1.0 (very positive)
+    sentiment_label = Column(String)         # "positive" | "neutral" | "negative"
+    sentiment_confidence = Column(Float)     # 0.0 to 1.0
+    sentiment_signals = Column(Text)         # JSON: {"stress": 0.6, "frustration": 0.3, "excitement": 0.1}
 
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 

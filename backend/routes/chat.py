@@ -12,6 +12,10 @@ from services.json_generator import generate_report_json
 from utils.logger import logger
 
 from services.vector_store import store_report_in_vectordb
+from services.sentiment_service import analyze_sentiment
+from services.memory_service import get_full_conversation_text
+from models.report_model import DailyReport
+import json
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -150,6 +154,33 @@ def end_session(req: EndRequest, db: Session = Depends(get_db)):
     )
 
     crud.create_report(db, report)
+
+    # ✅ Sentiment analysis (LLM-powered, runs on all standup text)
+    sentiment_result = analyze_sentiment(
+        mood=req.mood,
+        day_summary=req.day_summary,
+        blockers=report_data.get("blockers", ""),
+        tomorrow_plan=report_data.get("tomorrow_plan", ""),
+        conversation=get_full_conversation_text(session_id),
+    )
+
+    # Attach sentiment to latest report row
+    try:
+        latest = (
+            db.query(DailyReport)
+            .filter(DailyReport.emp_id == report.emp_id, DailyReport.date == report.report_date)
+            .order_by(DailyReport.id.desc())
+            .first()
+        )
+        if latest:
+            latest.sentiment_score = sentiment_result["sentiment_score"]
+            latest.sentiment_label = sentiment_result["sentiment_label"]
+            latest.sentiment_confidence = sentiment_result["sentiment_confidence"]
+            latest.sentiment_signals = json.dumps(sentiment_result["signals"])
+            db.commit()
+    except Exception as e:
+        logger.error(f"Failed to persist sentiment: {e}")
+
     # ✅ Vector DB me bhi save karo
     vector_result = store_report_in_vectordb(report_data, session_id)
     logger.info(f"VectorDB result: {vector_result}")
@@ -162,5 +193,6 @@ def end_session(req: EndRequest, db: Session = Depends(get_db)):
     return {
         "message": "Standup saved successfully ✅",
         "report": report_data,
+        "sentiment": sentiment_result,
         "vector_db_status": vector_result
     }
