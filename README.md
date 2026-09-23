@@ -117,15 +117,24 @@ Frontend runs at `http://localhost:5173`.
 
 ## Roadmap
 
+- [x] Employee analytics dashboard (streak, mood trend, task completion, reports history)
 - [ ] Multi-tenancy (organizations)
 - [ ] Subscription/billing (Razorpay)
-- [ ] Employee analytics dashboard
 - [ ] WhatsApp Business API integration
 - [ ] Slack integration
 - [ ] Email reminders
 - [ ] Data export (CSV/PDF)
 - [ ] Team hierarchy / managers
 - [ ] Mobile app
+
+## Employee Analytics Endpoints
+
+- `GET /employee/{emp_id}/stats` — overview stats (streak, completion, mood, blockers)
+- `GET /employee/{emp_id}/mood-trend?days=` — mood score over time
+- `GET /employee/{emp_id}/task-breakdown?days=` — task status counts + hours
+- `GET /employee/{emp_id}/reports?page=&limit=` — paginated history
+- `GET /employee/{emp_id}/report/{id}` — single report + tasks
+- `GET /employee/{emp_id}/recent-tasks?limit=&status=` — filtered tasks
 
 ## License
 
