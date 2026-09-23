@@ -122,6 +122,13 @@ Frontend runs at `http://localhost:5173`.
 - [x] Pricing tiers (Free / Growth / Pro / Enterprise) with detailed comparison table
 - [x] Onboarding tour (first-login guided walkthrough)
 - [x] Admin search + filters (mood, risk, help, date range)
+- [x] Public Roadmap page (Shipped / In Progress / Planned)
+- [x] Live Demo Mode (no login, pre-populated data)
+- [x] Global keyboard shortcuts (Cmd+K palette, Cmd+/ help)
+- [x] Markdown-rich chat messages (Standup + RAG assistant)
+- [x] AI Sentiment Analysis (score, label, stress/frustration/excitement signals)
+- [x] Blocker Resolution Suggestions (RAG-powered from past standups)
+- [x] Referral program (1 month free per paid conversion)
 - [ ] Multi-tenancy (organizations)
 - [ ] Subscription/billing (Razorpay)
 - [ ] WhatsApp Business API integration
