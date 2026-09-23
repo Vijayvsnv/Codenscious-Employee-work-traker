@@ -5,7 +5,6 @@ import {
   Heart,
   Code,
   Globe,
-  Github,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
@@ -13,6 +12,7 @@ import {
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
+import { GithubIcon } from "../components/ui/BrandIcons";
 import { MarketingNavbar } from "../components/marketing/Navbar";
 import { MarketingFooter } from "../components/marketing/Footer";
 
@@ -166,7 +166,7 @@ export default function About() {
       <section className="py-20 border-t border-border">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground text-background shadow-lg mb-6">
-            <Github className="h-6 w-6" />
+            <GithubIcon className="h-6 w-6" />
           </div>
           <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
             Open source. Inspectable. Yours.
@@ -181,7 +181,7 @@ export default function About() {
               rel="noopener noreferrer"
             >
               <Button variant="default" size="lg" className="w-full sm:w-auto">
-                <Github className="h-4 w-4" />
+                <GithubIcon className="h-4 w-4" />
                 View Source Code
               </Button>
             </a>

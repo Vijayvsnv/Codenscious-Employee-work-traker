@@ -17,7 +17,7 @@ import {
   Moon,
   Zap,
   MessageCircle,
-  Slack,
+  Hash,
   Mail,
   Calendar,
   Users,
@@ -108,10 +108,10 @@ const FEATURE_SECTIONS = [
   {
     title: "Integrations",
     subtitle: "Fits into your existing workflow",
-    icon: Slack,
+    icon: Hash,
     plan: "pro",
     features: [
-      { icon: Slack, title: "Slack integration (coming)", desc: "Standup reminders + submission via Slack DMs", plan: "pro", soon: true },
+      { icon: Hash, title: "Slack integration (coming)", desc: "Standup reminders + submission via Slack DMs", plan: "pro", soon: true },
       { icon: MessageCircle, title: "WhatsApp Business API (coming)", desc: "Log standups by replying to a WhatsApp message", plan: "pro", soon: true },
       { icon: Mail, title: "Email reminders (coming)", desc: "Automatic daily reminders for missed standups", plan: "growth", soon: true },
     ],

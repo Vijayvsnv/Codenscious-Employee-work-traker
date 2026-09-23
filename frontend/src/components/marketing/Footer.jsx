@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Github, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Logo } from "../ui/Logo";
+import { GithubIcon } from "../ui/BrandIcons";
 
 export function MarketingFooter() {
   const year = new Date().getFullYear();
@@ -22,7 +23,7 @@ export function MarketingFooter() {
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="GitHub"
               >
-                <Github className="h-4 w-4" />
+                <GithubIcon className="h-4 w-4" />
               </a>
               <a
                 href="mailto:hello@codenscious.com"

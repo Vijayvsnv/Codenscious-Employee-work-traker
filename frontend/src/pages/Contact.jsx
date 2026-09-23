@@ -2,14 +2,13 @@ import { useState } from "react";
 import {
   Mail,
   MessageSquare,
-  Github,
   MapPin,
   Clock,
   Send,
   ArrowRight,
-  Twitter,
-  Linkedin,
+  Globe,
 } from "lucide-react";
+import { GithubIcon, LinkedInIcon } from "../components/ui/BrandIcons";
 import { toast } from "sonner";
 
 import { Button } from "../components/ui/Button";
@@ -35,7 +34,7 @@ const CONTACT_OPTIONS = [
     desc: "For enterprise pricing and demos",
   },
   {
-    icon: Github,
+    icon: GithubIcon,
     label: "GitHub Issues",
     value: "Report bugs & features",
     href: "https://github.com/Vijayvsnv/Codenscious-Employee-work-traker/issues",
@@ -165,16 +164,16 @@ export default function Contact() {
                   className="h-9 w-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
                   aria-label="GitHub"
                 >
-                  <Github className="h-4 w-4" />
+                  <GithubIcon className="h-4 w-4" />
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href="https://codenscious.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="h-9 w-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                  aria-label="Twitter"
+                  aria-label="Website"
                 >
-                  <Twitter className="h-4 w-4" />
+                  <Globe className="h-4 w-4" />
                 </a>
                 <a
                   href="https://linkedin.com"
@@ -183,7 +182,7 @@ export default function Contact() {
                   className="h-9 w-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
                   aria-label="LinkedIn"
                 >
-                  <Linkedin className="h-4 w-4" />
+                  <LinkedInIcon className="h-4 w-4" />
                 </a>
               </div>
             </div>

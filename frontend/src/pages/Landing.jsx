@@ -4,20 +4,19 @@ import {
   Sparkles,
   MessageSquare,
   BarChart3,
-  ShieldCheck,
   Bot,
   Check,
   Zap,
   Rocket,
   Activity,
   ChevronRight,
-  Github,
   TrendingUp,
 } from "lucide-react";
 
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
+import { GithubIcon } from "../components/ui/BrandIcons";
 import { MarketingNavbar } from "../components/marketing/Navbar";
 import { MarketingFooter } from "../components/marketing/Footer";
 
@@ -84,7 +83,7 @@ export default function Landing() {
               rel="noopener noreferrer"
             >
               <Button variant="outline" size="xl" className="w-full sm:w-auto">
-                <Github className="h-4 w-4" />
+                <GithubIcon className="h-4 w-4" />
                 View Source
               </Button>
             </a>
