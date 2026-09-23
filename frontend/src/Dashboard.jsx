@@ -19,6 +19,37 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./com
 import { Badge } from "./components/ui/Badge";
 import { Logo } from "./components/ui/Logo";
 import { ThemeToggle } from "./components/ui/ThemeToggle";
+import { OnboardingTour } from "./components/OnboardingTour";
+
+const EMPLOYEE_TOUR_STEPS = [
+  {
+    target: "body",
+    placement: "center",
+    title: "Welcome to WorkPulse!",
+    content: "Let's take a quick 30-second tour so you know how everything works.",
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="start-standup"]',
+    title: "Log your daily standup",
+    content: "Click here to start a 5-minute AI chat that logs your daily work, blockers, and tomorrow's plan.",
+  },
+  {
+    target: '[data-tour="analytics"]',
+    title: "Your personal analytics",
+    content: "See your streak, mood trend, task completion rate, and full report history.",
+  },
+  {
+    target: '[data-tour="guidelines"]',
+    title: "Follow these guidelines",
+    content: "Complete standups get better analytics. Cover tasks, time spent, blockers, and tomorrow's plan.",
+  },
+  {
+    target: '[data-tour="theme-toggle"]',
+    title: "Switch themes anytime",
+    content: "Prefer light or dark? Toggle here. Your choice is saved automatically.",
+  },
+];
 
 function Dashboard() {
   const { state: user } = useLocation();
@@ -54,6 +85,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <OnboardingTour tourKey="employee-dashboard" steps={EMPLOYEE_TOUR_STEPS} />
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-card/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5">
@@ -64,11 +96,12 @@ function Dashboard() {
               variant="ghost"
               size="sm"
               onClick={() => navigate("/my-analytics", { state: user })}
+              data-tour="analytics"
             >
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">My Analytics</span>
             </Button>
-            <ThemeToggle />
+            <span data-tour="theme-toggle"><ThemeToggle /></span>
             <div className="hidden sm:flex items-center gap-2.5 pr-2">
               <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center text-white font-semibold text-sm shadow-sm">
                 {initials}
@@ -107,7 +140,7 @@ function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Guidelines Card */}
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2" data-tour="guidelines">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -180,6 +213,7 @@ function Dashboard() {
                   size="lg"
                   className="w-full mt-5"
                   onClick={startStandup}
+                  data-tour="start-standup"
                 >
                   Start Standup
                   <ArrowRight className="h-4 w-4" />

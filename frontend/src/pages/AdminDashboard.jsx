@@ -35,7 +35,38 @@ import { Modal } from "../components/ui/Modal";
 import { Logo } from "../components/ui/Logo";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { Skeleton } from "../components/ui/Skeleton";
+import { OnboardingTour } from "../components/OnboardingTour";
 import { cn } from "../lib/utils";
+
+const ADMIN_TOUR_STEPS = [
+  {
+    target: "body",
+    placement: "center",
+    title: "Welcome, Admin!",
+    content: "Here's a 30-second tour of your analytics dashboard.",
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="admin-stats"]',
+    title: "Real-time team stats",
+    content: "Today's reports, total employees, help requests, and high-risk blockers — all live. Click any card for details.",
+  },
+  {
+    target: '[data-tour="admin-charts"]',
+    title: "Visual analytics",
+    content: "Track daily activity, mood distribution, blocker risk, and task status trends over the last 30 days.",
+  },
+  {
+    target: '[data-tour="admin-chat-tab"]',
+    title: "AI Employee Query",
+    content: "Ask anything in natural language: 'Who had blockers?', 'What's team mood this week?' — powered by RAG.",
+  },
+  {
+    target: '[data-tour="admin-refresh"]',
+    title: "Fresh data anytime",
+    content: "Click refresh to pull the latest stats. Data updates automatically as employees log standups.",
+  },
+];
 
 const API_BASE = "http://127.0.0.1:8000";
 
@@ -284,6 +315,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background flex">
+      <OnboardingTour tourKey="admin-dashboard" steps={ADMIN_TOUR_STEPS} />
       <DetailModal modal={modal} onClose={closeModal} loading={modalLoading} />
 
       {/* Sidebar */}
@@ -302,12 +334,14 @@ export default function AdminDashboard() {
             icon={LayoutDashboard}
             label="Dashboard"
           />
-          <SidebarLink
-            active={activeTab === "chat"}
-            onClick={() => setActiveTab("chat")}
-            icon={MessageSquare}
-            label="Employee Query"
-          />
+          <div data-tour="admin-chat-tab">
+            <SidebarLink
+              active={activeTab === "chat"}
+              onClick={() => setActiveTab("chat")}
+              icon={MessageSquare}
+              label="Employee Query"
+            />
+          </div>
         </nav>
 
         <div className="p-3 border-t border-border space-y-2">
@@ -369,14 +403,14 @@ export default function AdminDashboard() {
                   Real-time employee standup insights
                 </p>
               </div>
-              <Button variant="outline" onClick={() => fetchDashboard(true)} loading={refreshing}>
+              <Button variant="outline" onClick={() => fetchDashboard(true)} loading={refreshing} data-tour="admin-refresh">
                 <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin")} />
                 Refresh
               </Button>
             </div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" data-tour="admin-stats">
               <StatCard
                 title="Today's Reports"
                 value={data?.today_reports ?? 0}
@@ -415,7 +449,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Charts Row 1 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4" data-tour="admin-charts">
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-2">
