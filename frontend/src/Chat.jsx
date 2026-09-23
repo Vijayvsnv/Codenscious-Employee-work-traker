@@ -20,6 +20,7 @@ import { Textarea } from "./components/ui/Input";
 import { Logo } from "./components/ui/Logo";
 import { ThemeToggle } from "./components/ui/ThemeToggle";
 import { MarkdownContent } from "./components/MarkdownContent";
+import { BlockerSuggestion } from "./components/BlockerSuggestion";
 import { cn } from "./lib/utils";
 
 const API_BASE = "http://127.0.0.1:8000";
@@ -248,6 +249,24 @@ function Chat() {
               </div>
             </div>
           )}
+
+          {/* Blocker suggestion — show after user submits a blocker in blocker phase */}
+          {(phase === "tomorrow" || phase === "mood") && (() => {
+            // Grab the last user message during the blocker phase (heuristic: message before tomorrow phase)
+            const lastUser = [...messages].reverse().find(m => m.role === "user");
+            if (!lastUser || !lastUser.text || lastUser.text.trim().length < 10) return null;
+            const lower = lastUser.text.toLowerCase();
+            // Skip if user clearly said no blockers
+            const noBlockerHints = ["no blocker", "nahi hai", "koi nahi", "no issue", "all good", "none", "sab thik"];
+            if (noBlockerHints.some(h => lower.includes(h))) return null;
+            return (
+              <BlockerSuggestion
+                blocker={lastUser.text}
+                empId={user.emp_id}
+                className="animate-fade-in"
+              />
+            );
+          })()}
 
           {done && !submitted && (
             <Card className="animate-fade-in border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">

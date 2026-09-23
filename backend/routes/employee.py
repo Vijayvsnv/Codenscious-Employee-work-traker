@@ -4,9 +4,17 @@ from sqlalchemy import func, and_
 from datetime import date, timedelta
 from typing import Optional
 
+from pydantic import BaseModel
+
 from db.database import get_db
 from models.report_model import DailyReport, Task
+from services.blocker_service import suggest_blocker_resolution
 from utils.logger import logger
+
+
+class BlockerSuggestionRequest(BaseModel):
+    blocker: str
+    emp_id: Optional[str] = None
 
 router = APIRouter(prefix="/employee", tags=["employee"])
 
@@ -300,6 +308,21 @@ def get_sentiment_trend(
     except Exception as e:
         logger.error(f"Sentiment trend error for {emp_id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch sentiment trend")
+
+
+# ─── API 6b: BLOCKER RESOLUTION SUGGESTIONS ──────────
+@router.post("/blocker/suggest")
+def get_blocker_suggestion(req: BlockerSuggestionRequest):
+    """
+    Given a blocker description, RAG-search past standups for similar blockers
+    and get LLM-generated resolution suggestions.
+    """
+    result = suggest_blocker_resolution(
+        blocker_text=req.blocker,
+        emp_id=req.emp_id,
+        exclude_emp_id=True,
+    )
+    return result
 
 
 # ─── API 7: RECENT TASKS ─────────────────────────────
