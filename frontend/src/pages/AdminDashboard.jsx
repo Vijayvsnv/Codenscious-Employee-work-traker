@@ -41,6 +41,7 @@ import { Logo } from "../components/ui/Logo";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { Skeleton } from "../components/ui/Skeleton";
 import { OnboardingTour } from "../components/OnboardingTour";
+import { MarkdownContent } from "../components/MarkdownContent";
 import { cn } from "../lib/utils";
 
 const ADMIN_TOUR_STEPS = [
@@ -1050,13 +1051,13 @@ export default function AdminDashboard() {
                   )}
                   <div
                     className={cn(
-                      "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap",
+                      "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
                       m.role === "ai"
                         ? "bg-card border border-border text-foreground rounded-tl-sm"
                         : "bg-gradient-to-br from-accent to-indigo-600 text-white rounded-tr-sm shadow-sm"
                     )}
                   >
-                    {m.text}
+                    <MarkdownContent>{m.text}</MarkdownContent>
                   </div>
                 </div>
               ))}

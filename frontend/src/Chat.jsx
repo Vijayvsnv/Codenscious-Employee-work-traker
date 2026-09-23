@@ -19,6 +19,7 @@ import { Badge } from "./components/ui/Badge";
 import { Textarea } from "./components/ui/Input";
 import { Logo } from "./components/ui/Logo";
 import { ThemeToggle } from "./components/ui/ThemeToggle";
+import { MarkdownContent } from "./components/MarkdownContent";
 import { cn } from "./lib/utils";
 
 const API_BASE = "http://127.0.0.1:8000";
@@ -226,13 +227,13 @@ function Chat() {
               {m.role === "ai" && <AIAvatar />}
               <div
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap",
+                  "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
                   m.role === "ai"
                     ? "bg-card border border-border text-foreground rounded-tl-sm"
                     : "bg-gradient-to-br from-primary to-cyan-500 text-white rounded-tr-sm shadow-sm"
                 )}
               >
-                {m.text}
+                <MarkdownContent>{m.text}</MarkdownContent>
               </div>
             </div>
           ))}
