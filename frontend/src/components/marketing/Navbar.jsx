@@ -67,6 +67,9 @@ export function MarketingNavbar() {
           <Link to="/login" className="hidden sm:inline-flex">
             <Button variant="ghost" size="sm">Sign in</Button>
           </Link>
+          <Link to="/demo" className="hidden md:inline-flex">
+            <Button variant="ghost" size="sm">Live Demo</Button>
+          </Link>
           <Link to="/register" className="hidden sm:inline-flex">
             <Button variant="gradient" size="sm">
               Get Started

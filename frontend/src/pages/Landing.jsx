@@ -77,16 +77,12 @@ export default function Landing() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <a
-              href="https://github.com/Vijayvsnv/Codenscious-Employee-work-traker"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link to="/demo">
               <Button variant="outline" size="xl" className="w-full sm:w-auto">
-                <GithubIcon className="h-4 w-4" />
-                View Source
+                <Bot className="h-4 w-4" />
+                Try Live Demo
               </Button>
-            </a>
+            </Link>
           </div>
 
           <p className="mt-4 text-xs text-muted-foreground">

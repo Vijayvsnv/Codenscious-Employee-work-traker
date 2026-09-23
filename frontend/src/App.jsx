@@ -7,6 +7,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import Roadmap from "./pages/Roadmap";
+import Demo from "./pages/Demo";
 import Privacy from "./pages/legal/Privacy";
 import Terms from "./pages/legal/Terms";
 import Login from "./Login";
@@ -29,6 +30,7 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/faq" element={<FAQ />} />
       <Route path="/roadmap" element={<Roadmap />} />
+      <Route path="/demo" element={<Demo />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
 
