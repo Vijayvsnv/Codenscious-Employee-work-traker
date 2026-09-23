@@ -118,6 +118,9 @@ Frontend runs at `http://localhost:5173`.
 ## Roadmap
 
 - [x] Employee analytics dashboard (streak, mood trend, task completion, reports history)
+- [x] Landing / marketing page with pricing and testimonials
+- [x] Onboarding tour (first-login guided walkthrough)
+- [x] Admin search + filters (mood, risk, help, date range)
 - [ ] Multi-tenancy (organizations)
 - [ ] Subscription/billing (Razorpay)
 - [ ] WhatsApp Business API integration
