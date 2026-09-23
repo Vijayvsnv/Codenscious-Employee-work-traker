@@ -12,6 +12,7 @@ import {
   Coffee,
   ArrowRight,
   BarChart3,
+  Gift,
 } from "lucide-react";
 
 import { Button } from "./components/ui/Button";
@@ -99,7 +100,15 @@ function Dashboard() {
               data-tour="analytics"
             >
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">My Analytics</span>
+              <span className="hidden sm:inline">Analytics</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/referrals", { state: user })}
+            >
+              <Gift className="h-4 w-4" />
+              <span className="hidden md:inline">Refer</span>
             </Button>
             <span data-tour="theme-toggle"><ThemeToggle /></span>
             <div className="hidden sm:flex items-center gap-2.5 pr-2">

@@ -16,6 +16,7 @@ import Dashboard from "./Dashboard";
 import Chat from "./Chat";
 import AdminDashboard from "./pages/AdminDashboard";
 import EmployeeAnalytics from "./pages/EmployeeAnalytics";
+import Referrals from "./pages/Referrals";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/my-analytics" element={<EmployeeAnalytics />} />
+      <Route path="/referrals" element={<Referrals />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
     </>

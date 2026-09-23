@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { registerUser } from "./authService";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import axios from "axios";
 import { toast } from "sonner";
 import {
   User,
@@ -10,13 +11,17 @@ import {
   Hash,
   ArrowRight,
   CheckCircle2,
+  Gift,
 } from "lucide-react";
 
 import { Button } from "./components/ui/Button";
 import { Input, Label } from "./components/ui/Input";
 import { Card } from "./components/ui/Card";
+import { Badge } from "./components/ui/Badge";
 import { Logo } from "./components/ui/Logo";
 import { ThemeToggle } from "./components/ui/ThemeToggle";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000";
 
 function Register() {
   const [form, setForm] = useState({
@@ -28,7 +33,30 @@ function Register() {
     confirm: "",
   });
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [refCode, setRefCode] = useState("");
+  const [refValid, setRefValid] = useState(null); // null | true | false
+  const [refOwner, setRefOwner] = useState("");
   const navigate = useNavigate();
+
+  // Detect referral code from URL param (?ref=CODE)
+  useEffect(() => {
+    const code = searchParams.get("ref");
+    if (code) {
+      setRefCode(code.toUpperCase());
+      // Validate
+      axios.get(`${API_BASE}/referral/validate/${code.toUpperCase()}`)
+        .then((res) => {
+          if (res.data.valid) {
+            setRefValid(true);
+            setRefOwner(res.data.owner_name || "someone");
+          } else {
+            setRefValid(false);
+          }
+        })
+        .catch(() => setRefValid(false));
+    }
+  }, [searchParams]);
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -59,6 +87,22 @@ function Register() {
         email.trim(),
         password
       );
+
+      // Apply referral code if valid
+      if (refCode && refValid) {
+        try {
+          await axios.post(`${API_BASE}/referral/use`, {
+            referral_code: refCode,
+            new_emp_id: empId.trim(),
+            new_email: email.trim(),
+            new_name: name.trim(),
+          });
+          toast.success(`Signed up with ${refOwner}'s referral!`);
+        } catch {
+          // Silent failure — user still gets account
+        }
+      }
+
       toast.success("Account created successfully!");
       navigate("/dashboard", { state: user });
     } catch (err) {
@@ -99,6 +143,27 @@ function Register() {
             Register as a new employee to get started
           </p>
         </div>
+
+        {refValid === true && (
+          <div className="mb-4 p-3 rounded-lg border border-warning/30 bg-warning/5 flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-warning/10 border border-warning/20 flex items-center justify-center shrink-0">
+              <Gift className="h-4 w-4 text-warning" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">
+                Invited by {refOwner}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Using code <Badge variant="warning" className="ml-1 text-[10px] font-mono">{refCode}</Badge>
+              </p>
+            </div>
+          </div>
+        )}
+        {refValid === false && (
+          <div className="mb-4 p-3 rounded-lg border border-destructive/30 bg-destructive/5 text-xs text-destructive">
+            Invalid referral code — you can still sign up without one.
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {fields.map(({ key, label, placeholder, type, icon }) => (
