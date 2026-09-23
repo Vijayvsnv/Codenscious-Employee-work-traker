@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, Search } from "lucide-react";
 
 import { Button } from "../ui/Button";
 import { Logo } from "../ui/Logo";
@@ -17,6 +17,15 @@ const NAV_LINKS = [
 
 export function MarketingNavbar() {
   const [open, setOpen] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac/i.test(navigator.userAgent));
+  }, []);
+
+  const openPalette = () => {
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
+  };
 
   return (
     <nav className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
@@ -43,6 +52,17 @@ export function MarketingNavbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={openPalette}
+            className="hidden lg:inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-secondary/50 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            aria-label="Open command palette"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>Search...</span>
+            <kbd className="rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono">
+              {isMac ? "⌘" : "Ctrl"} K
+            </kbd>
+          </button>
           <ThemeToggle />
           <Link to="/login" className="hidden sm:inline-flex">
             <Button variant="ghost" size="sm">Sign in</Button>

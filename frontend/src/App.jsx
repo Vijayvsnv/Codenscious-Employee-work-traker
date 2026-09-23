@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { ShortcutsProvider } from "./components/ShortcutsProvider";
 import Landing from "./pages/Landing";
 import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
@@ -17,7 +18,9 @@ import EmployeeAnalytics from "./pages/EmployeeAnalytics";
 
 function App() {
   return (
-    <Routes>
+    <>
+      <ShortcutsProvider />
+      <Routes>
       {/* Marketing */}
       <Route path="/" element={<Landing />} />
       <Route path="/features" element={<Features />} />
@@ -38,7 +41,8 @@ function App() {
       <Route path="/chat" element={<Chat />} />
       <Route path="/my-analytics" element={<EmployeeAnalytics />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
-    </Routes>
+      </Routes>
+    </>
   );
 }
 
