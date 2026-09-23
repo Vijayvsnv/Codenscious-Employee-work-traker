@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import Landing from "./pages/Landing";
 import Login from "./Login";
 import Register from "./Register";
 import Dashboard from "./Dashboard";
@@ -9,7 +10,8 @@ import EmployeeAnalytics from "./pages/EmployeeAnalytics";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/chat" element={<Chat />} />

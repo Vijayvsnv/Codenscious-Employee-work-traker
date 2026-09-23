@@ -102,7 +102,7 @@ export default function EmployeeAnalytics() {
   const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
-    if (!user) { navigate("/"); return; }
+    if (!user) { navigate("/login"); return; }
     fetchAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

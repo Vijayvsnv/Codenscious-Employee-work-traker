@@ -51,7 +51,7 @@ function Chat() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    if (!user) { navigate("/"); return; }
+    if (!user) { navigate("/login"); return; }
     startSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

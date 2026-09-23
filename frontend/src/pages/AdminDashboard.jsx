@@ -210,7 +210,7 @@ export default function AdminDashboard() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    if (!admin) { navigate("/"); return; }
+    if (!admin) { navigate("/login"); return; }
     fetchDashboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
 
   const handleLogout = () => {
     toast.success("Logged out");
-    navigate("/");
+    navigate("/login");
   };
 
   return (

@@ -25,7 +25,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   if (!user) {
-    navigate("/");
+    navigate("/login");
     return null;
   }
 
@@ -34,7 +34,7 @@ function Dashboard() {
   const handleLogout = async () => {
     await logoutUser();
     toast.success("Logged out successfully");
-    navigate("/");
+    navigate("/login");
   };
 
   const guidelines = [
