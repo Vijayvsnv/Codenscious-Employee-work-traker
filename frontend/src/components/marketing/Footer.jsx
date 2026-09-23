@@ -40,6 +40,7 @@ export function MarketingFooter() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/features" className="hover:text-foreground">Features</Link></li>
               <li><Link to="/pricing" className="hover:text-foreground">Pricing</Link></li>
+              <li><Link to="/roadmap" className="hover:text-foreground">Roadmap</Link></li>
               <li><Link to="/faq" className="hover:text-foreground">FAQ</Link></li>
             </ul>
           </div>

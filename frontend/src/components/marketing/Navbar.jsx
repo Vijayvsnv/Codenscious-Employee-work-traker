@@ -10,9 +10,9 @@ import { cn } from "../../lib/utils";
 const NAV_LINKS = [
   { label: "Features", to: "/features" },
   { label: "Pricing", to: "/pricing" },
+  { label: "Roadmap", to: "/roadmap" },
   { label: "FAQ", to: "/faq" },
   { label: "About", to: "/about" },
-  { label: "Contact", to: "/contact" },
 ];
 
 export function MarketingNavbar() {
