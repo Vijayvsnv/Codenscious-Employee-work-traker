@@ -11,6 +11,7 @@ import {
   Target,
   Coffee,
   ArrowRight,
+  BarChart3,
 } from "lucide-react";
 
 import { Button } from "./components/ui/Button";
@@ -59,6 +60,14 @@ function Dashboard() {
           <Logo />
 
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/my-analytics", { state: user })}
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">My Analytics</span>
+            </Button>
             <ThemeToggle />
             <div className="hidden sm:flex items-center gap-2.5 pr-2">
               <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center text-white font-semibold text-sm shadow-sm">
@@ -174,6 +183,15 @@ function Dashboard() {
                 >
                   Start Standup
                   <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full mt-2"
+                  onClick={() => navigate("/my-analytics", { state: user })}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  View My Analytics
                 </Button>
               </CardContent>
             </Card>
