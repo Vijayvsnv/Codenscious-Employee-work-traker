@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from fastapi import Depends
 from pydantic import BaseModel
 from datetime import date, timedelta
+from typing import Optional
 
 from db.database import get_db
 from models.report_model import DailyReport, Task
@@ -333,3 +334,106 @@ def get_mood_detail(mood: str, db: Session = Depends(get_db)):
         ]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ─── API 9: SEARCH EMPLOYEES ──────────────────────────
+@router.get("/search-employees")
+def search_employees(
+    q: Optional[str] = Query(None, description="Name or emp_id substring"),
+    db: Session = Depends(get_db)
+):
+    try:
+        query = db.query(
+            DailyReport.emp_id,
+            DailyReport.name,
+            func.count(DailyReport.id).label("total_reports"),
+            func.max(DailyReport.date).label("last_report"),
+        ).group_by(DailyReport.emp_id, DailyReport.name)
+
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            query = query.filter(or_(
+                DailyReport.name.ilike(term),
+                DailyReport.emp_id.ilike(term),
+            ))
+
+        employees = query.order_by(func.max(DailyReport.date).desc()).limit(50).all()
+
+        return [
+            {
+                "emp_id": e.emp_id,
+                "name": e.name,
+                "total_reports": e.total_reports,
+                "last_report": str(e.last_report) if e.last_report else None,
+            }
+            for e in employees
+        ]
+    except Exception as e:
+        logger.error(f"Search employees error: {e}")
+        raise HTTPException(status_code=500, detail="Search failed")
+
+
+# ─── API 10: FILTERED REPORTS ─────────────────────────
+@router.get("/reports/search")
+def search_reports_endpoint(
+    q: Optional[str] = None,
+    mood: Optional[str] = None,
+    risk: Optional[str] = None,
+    help_needed: Optional[bool] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    try:
+        query = db.query(DailyReport)
+
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            query = query.filter(or_(
+                DailyReport.name.ilike(term),
+                DailyReport.emp_id.ilike(term),
+                DailyReport.day_summary.ilike(term),
+                DailyReport.blockers.ilike(term),
+            ))
+        if mood:
+            query = query.filter(DailyReport.mood == mood)
+        if risk:
+            query = query.filter(DailyReport.blocker_risk_level == risk)
+        if help_needed is not None:
+            query = query.filter(DailyReport.help_needed == help_needed)
+        if start_date:
+            query = query.filter(DailyReport.date >= start_date)
+        if end_date:
+            query = query.filter(DailyReport.date <= end_date)
+
+        total = query.count()
+        offset = (page - 1) * limit
+        reports = query.order_by(DailyReport.date.desc()).offset(offset).limit(limit).all()
+
+        return {
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "total_pages": (total + limit - 1) // limit,
+            "reports": [
+                {
+                    "id": r.id,
+                    "name": r.name,
+                    "emp_id": r.emp_id,
+                    "date": str(r.date),
+                    "mood": r.mood,
+                    "blocker_risk_level": r.blocker_risk_level,
+                    "help_needed": r.help_needed,
+                    "help_from": r.help_from,
+                    "day_summary": r.day_summary,
+                    "blockers": r.blockers,
+                    "tomorrow_plan": r.tomorrow_plan,
+                }
+                for r in reports
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Reports search error: {e}")
+        raise HTTPException(status_code=500, detail="Search failed")

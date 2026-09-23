@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Joyride, { STATUS } from "react-joyride";
+import { Joyride, STATUS } from "react-joyride";
 import { useTheme } from "../context/ThemeContext";
 
 const STORAGE_KEY_PREFIX = "workpulse:tour:";

@@ -25,12 +25,17 @@ import {
   Activity,
   Calendar,
   Clock,
+  Search,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import { Button } from "../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
-import { Textarea } from "../components/ui/Input";
+import { Input, Textarea } from "../components/ui/Input";
 import { Modal } from "../components/ui/Modal";
 import { Logo } from "../components/ui/Logo";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
@@ -240,6 +245,21 @@ export default function AdminDashboard() {
   const [chatLoading, setChatLoading] = useState(false);
   const bottomRef = useRef(null);
 
+  // Search + filters state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [filters, setFilters] = useState({
+    mood: "",
+    risk: "",
+    help_needed: "",
+    start_date: "",
+    end_date: "",
+  });
+  const [searchResults, setSearchResults] = useState({ reports: [], total: 0, total_pages: 0, page: 1 });
+  const [searchPage, setSearchPage] = useState(1);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+
   useEffect(() => {
     if (!admin) { navigate("/login"); return; }
     fetchDashboard();
@@ -249,6 +269,48 @@ export default function AdminDashboard() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, chatLoading]);
+
+  // Debounce search input
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 400);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // Fetch filtered reports when on search tab
+  useEffect(() => {
+    if (activeTab === "search") fetchSearchResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, debouncedSearch, filters, searchPage]);
+
+  const fetchSearchResults = async () => {
+    setSearchLoading(true);
+    try {
+      const params = new URLSearchParams({ page: searchPage, limit: 20 });
+      if (debouncedSearch) params.append("q", debouncedSearch);
+      if (filters.mood) params.append("mood", filters.mood);
+      if (filters.risk) params.append("risk", filters.risk);
+      if (filters.help_needed !== "") params.append("help_needed", filters.help_needed);
+      if (filters.start_date) params.append("start_date", filters.start_date);
+      if (filters.end_date) params.append("end_date", filters.end_date);
+
+      const res = await axios.get(`${API_BASE}/admin/reports/search?${params}`);
+      setSearchResults(res.data);
+    } catch {
+      toast.error("Search failed");
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const clearFilters = () => {
+    setFilters({ mood: "", risk: "", help_needed: "", start_date: "", end_date: "" });
+    setSearchQuery("");
+    setSearchPage(1);
+  };
+
+  const activeFilterCount =
+    (filters.mood ? 1 : 0) + (filters.risk ? 1 : 0) + (filters.help_needed !== "" ? 1 : 0) +
+    (filters.start_date ? 1 : 0) + (filters.end_date ? 1 : 0);
 
   const fetchDashboard = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -334,6 +396,12 @@ export default function AdminDashboard() {
             icon={LayoutDashboard}
             label="Dashboard"
           />
+          <SidebarLink
+            active={activeTab === "search"}
+            onClick={() => setActiveTab("search")}
+            icon={Search}
+            label="Search Reports"
+          />
           <div data-tour="admin-chat-tab">
             <SidebarLink
               active={activeTab === "chat"}
@@ -369,20 +437,29 @@ export default function AdminDashboard() {
               </Button>
             </div>
           </div>
-          <div className="flex border-t border-border">
+          <div className="flex border-t border-border overflow-x-auto">
             <button
               onClick={() => setActiveTab("dashboard")}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium border-b-2 transition-colors",
+                "flex-1 min-w-max flex items-center justify-center gap-2 px-3 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap",
                 activeTab === "dashboard" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
               )}
             >
               <LayoutDashboard className="h-4 w-4" /> Dashboard
             </button>
             <button
+              onClick={() => setActiveTab("search")}
+              className={cn(
+                "flex-1 min-w-max flex items-center justify-center gap-2 px-3 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap",
+                activeTab === "search" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+              )}
+            >
+              <Search className="h-4 w-4" /> Search
+            </button>
+            <button
               onClick={() => setActiveTab("chat")}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium border-b-2 transition-colors",
+                "flex-1 min-w-max flex items-center justify-center gap-2 px-3 py-3 text-xs font-medium border-b-2 transition-colors whitespace-nowrap",
                 activeTab === "chat" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
               )}
             >
@@ -687,6 +764,248 @@ export default function AdminDashboard() {
           </main>
         )}
 
+        {/* Search Tab */}
+        {activeTab === "search" && (
+          <main className="flex-1 p-6 lg:p-8 max-w-7xl mx-auto w-full animate-fade-in">
+            <div className="mb-6">
+              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-foreground">
+                Search Reports
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Find any report by employee name, ID, or content — with filters
+              </p>
+            </div>
+
+            {/* Search bar */}
+            <div className="flex gap-2 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search by name, employee ID, summary, or blocker text..."
+                  value={searchQuery}
+                  onChange={(e) => { setSearchQuery(e.target.value); setSearchPage(1); }}
+                  className="w-full h-11 pl-9 pr-10 rounded-lg border border-input bg-background text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <Button
+                variant={showFilters || activeFilterCount > 0 ? "default" : "outline"}
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filters
+                {activeFilterCount > 0 && (
+                  <Badge variant="secondary" className="ml-1 h-5 min-w-[20px] px-1.5 text-[10px]">
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </Button>
+            </div>
+
+            {/* Filter panel */}
+            {showFilters && (
+              <Card className="mb-4 border-border/60 animate-fade-in">
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <FilterField label="Mood">
+                      <select
+                        value={filters.mood}
+                        onChange={(e) => { setFilters(f => ({ ...f, mood: e.target.value })); setSearchPage(1); }}
+                        className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">Any mood</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                      </select>
+                    </FilterField>
+                    <FilterField label="Blocker Risk">
+                      <select
+                        value={filters.risk}
+                        onChange={(e) => { setFilters(f => ({ ...f, risk: e.target.value })); setSearchPage(1); }}
+                        className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">Any risk</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                      </select>
+                    </FilterField>
+                    <FilterField label="Help Needed">
+                      <select
+                        value={filters.help_needed}
+                        onChange={(e) => { setFilters(f => ({ ...f, help_needed: e.target.value })); setSearchPage(1); }}
+                        className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">Any</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    </FilterField>
+                    <FilterField label="From Date">
+                      <input
+                        type="date"
+                        value={filters.start_date}
+                        onChange={(e) => { setFilters(f => ({ ...f, start_date: e.target.value })); setSearchPage(1); }}
+                        className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      />
+                    </FilterField>
+                    <FilterField label="To Date">
+                      <input
+                        type="date"
+                        value={filters.end_date}
+                        onChange={(e) => { setFilters(f => ({ ...f, end_date: e.target.value })); setSearchPage(1); }}
+                        className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      />
+                    </FilterField>
+                  </div>
+                  {activeFilterCount > 0 && (
+                    <div className="mt-4 flex justify-end">
+                      <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <X className="h-3.5 w-3.5" />
+                        Clear all filters
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Results */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-base">Results</CardTitle>
+                    <CardDescription>
+                      {searchLoading ? "Searching..." : `${searchResults.total} report(s) found`}
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-y border-border bg-secondary/30">
+                        {["Employee", "Emp ID", "Date", "Mood", "Risk", "Help", "Summary"].map(h => (
+                          <th key={h} className="text-left text-[11px] font-semibold text-muted-foreground px-4 py-3 uppercase tracking-wider">
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {searchLoading ? (
+                        [...Array(5)].map((_, i) => (
+                          <tr key={i} className="border-b border-border">
+                            {[...Array(7)].map((_, j) => (
+                              <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-full" /></td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : searchResults.reports.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="px-4 py-12">
+                            <div className="text-center">
+                              <div className="h-12 w-12 rounded-full bg-muted mx-auto flex items-center justify-center mb-3">
+                                <Search className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {debouncedSearch || activeFilterCount > 0 ? "No reports match your search" : "Start typing to search reports"}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        searchResults.reports.map((r) => {
+                          const MoodIcon = MOOD_ICON[r.mood];
+                          return (
+                            <tr
+                              key={r.id}
+                              onClick={() => setModal({ open: true, title: `${r.name} — ${r.date}`, data: [r], type: "single" })}
+                              className="border-b border-border hover:bg-secondary/40 transition-colors cursor-pointer"
+                            >
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-accent to-indigo-600 flex items-center justify-center text-white text-xs font-semibold">
+                                    {r.name?.charAt(0)}
+                                  </div>
+                                  <span className="text-sm font-medium text-foreground">{r.name}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <Badge variant="default" className="font-mono text-[10px]">
+                                  {r.emp_id}
+                                </Badge>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                  <Calendar className="h-3 w-3" />
+                                  {r.date}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                {r.mood && MoodIcon && (
+                                  <Badge variant={r.mood === "High" ? "success" : r.mood === "Medium" ? "warning" : "destructive"}>
+                                    <MoodIcon className="h-3 w-3" />
+                                    {r.mood}
+                                  </Badge>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                <Badge variant={r.blocker_risk_level === "High" ? "destructive" : r.blocker_risk_level === "Medium" ? "warning" : "secondary"}>
+                                  {r.blocker_risk_level || "None"}
+                                </Badge>
+                              </td>
+                              <td className="px-4 py-3">
+                                {r.help_needed ? (
+                                  <Badge variant="warning"><HandHelping className="h-3 w-3" /> Yes</Badge>
+                                ) : (
+                                  <span className="text-xs text-muted-foreground">—</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 max-w-[280px]">
+                                <p className="text-sm text-muted-foreground truncate">{r.day_summary || "—"}</p>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {searchResults.total_pages > 1 && (
+                  <div className="flex items-center justify-between p-4 border-t border-border">
+                    <p className="text-xs text-muted-foreground">
+                      Page {searchResults.page} of {searchResults.total_pages} · {searchResults.total} total
+                    </p>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => setSearchPage(p => Math.max(1, p - 1))} disabled={searchPage === 1}>
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setSearchPage(p => Math.min(searchResults.total_pages, p + 1))} disabled={searchPage === searchResults.total_pages}>
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </main>
+        )}
+
         {/* Chat Tab */}
         {activeTab === "chat" && (
           <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 lg:px-6 min-h-0 animate-fade-in">
@@ -787,6 +1106,15 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function FilterField({ label, children }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      {children}
     </div>
   );
 }
